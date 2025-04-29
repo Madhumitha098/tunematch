@@ -21,36 +21,132 @@ function App() {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch('http://127.0.0.1:5000/match', {
-      method: 'POST',
-      body: formData,
-    });
+    try {
+      const response = await fetch('http://127.0.0.1:5000/match', {
+        method: 'POST',
+        body: formData,
+      });
 
-    const data = await response.json();
-    setResult(data);
+      const data = await response.json();
+
+      if (data.error) {
+        alert("Server error: " + data.error);
+      } else {
+        setResult(data);
+      }
+    } catch (error) {
+      alert("Error reaching server: " + error.message);
+      console.error('Request failed:', error);
+    }
+  };
+
+  const fetchSpotifySongs = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/spotify-match?query=pop');
+      const data = await response.json();
+
+      if (data.error) {
+        alert("Spotify error: " + data.error);
+      } else {
+        setResult({
+          matched_song: '🎧 Spotify Suggestions',
+          playlist: data.results.map(track => `${track.name} - ${track.artist}`)
+        });
+      }
+    } catch (error) {
+      alert("Failed to fetch Spotify songs: " + error.message);
+    }
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>🎧 TuneMatch</h1>
-      <p>Hum a tune or upload an audio file to find a song</p>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Poppins, sans-serif',
+      padding: '20px'
+    }}>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#ffffff' }}>🎧 TuneMatch</h1>
+      <p style={{ fontSize: '1.2rem', color: '#f0f0f0', marginBottom: '30px' }}>
+        Hum a tune or upload an audio file to find a matching song!
+      </p>
 
-      <input type="file" accept="audio/*" onChange={handleAudioUpload} />
-      {audioURL && <audio controls src={audioURL} />}
+      <div style={{
+        background: '#ffffff',
+        padding: '30px',
+        borderRadius: '20px',
+        boxShadow: '0px 4px 15px rgba(0,0,0,0.1)',
+        textAlign: 'center',
+        width: '300px'
+      }}>
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={handleAudioUpload}
+          style={{ marginBottom: '20px' }}
+        />
+        {audioURL && <audio controls src={audioURL} style={{ marginBottom: '20px', width: '100%' }} />}
+        <br />
 
-      <button style={{ marginTop: '20px' }} onClick={searchSong}>
-        Search Song
-      </button>
+        <button
+          onClick={searchSong}
+          style={{
+            backgroundColor: '#c471f5',
+            border: 'none',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '30px',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            marginBottom: '10px',
+            transition: 'background 0.3s ease'
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = '#a051d1'}
+          onMouseOut={(e) => e.target.style.backgroundColor = '#c471f5'}
+        >
+          🎵 Search Song
+        </button>
 
-      {result && (
-        <div style={{ marginTop: '30px' }}>
-          <h2>🎵 Matched Song:</h2>
-          <p>{result.matched_song}</p>
+        <br />
 
-          <h3>Recommended Playlist:</h3>
-          <ul>
-            {result.playlist.map((song, idx) => (
-              <li key={idx}>{song}</li>
+        <button
+          onClick={fetchSpotifySongs}
+          style={{
+            backgroundColor: '#6b5b95',
+            border: 'none',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '30px',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            transition: 'background 0.3s ease'
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = '#59477d'}
+          onMouseOut={(e) => e.target.style.backgroundColor = '#6b5b95'}
+        >
+          🎶 Get Spotify Songs
+        </button>
+      </div>
+
+      {result && result.matched_song && (
+        <div style={{
+          background: '#ffffff',
+          marginTop: '40px',
+          padding: '20px',
+          borderRadius: '20px',
+          boxShadow: '0px 4px 15px rgba(0,0,0,0.1)',
+          width: '300px',
+          textAlign: 'center'
+        }}>
+          <h2 style={{ marginBottom: '10px', color: '#333' }}>{result.matched_song}</h2>
+
+          <h3 style={{ marginBottom: '10px', color: '#666' }}>Recommended Playlist:</h3>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+            {result.playlist && result.playlist.map((song, idx) => (
+              <li key={idx} style={{ marginBottom: '8px' }}>🎵 {song}</li>
             ))}
           </ul>
         </div>

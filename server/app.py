@@ -3,14 +3,42 @@ from flask_cors import CORS
 import os
 import librosa
 import numpy as np
+import requests
+import base64
 
+# === Spotify API credentials ===
+SPOTIFY_CLIENT_ID = 'your_client_id_here'
+SPOTIFY_CLIENT_SECRET = 'your_client_secret_here'
+
+# === Flask Setup ===
 app = Flask(__name__)
 CORS(app)
 
-# Folder to save uploaded files
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+# === Get Spotify Access Token ===
+def get_spotify_token():
+    auth_url = 'https://accounts.spotify.com/api/token'
+    auth_header = base64.b64encode(f"{'caeef8d028b74027910db1ff9e07697f'}:{'693343522b2c400e84bdb1e7e7f9e59d'}".encode()).decode()
+
+    headers = {
+        'Authorization': f'Basic {auth_header}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    data = {
+        'grant_type': 'client_credentials'
+    }
+
+    response = requests.post(auth_url, headers=headers, data=data)
+
+    if response.status_code == 200:
+        return response.json()['access_token']
+    else:
+        raise Exception('Failed to authenticate with Spotify API')
+
+# === File Upload + Basic Analysis (still mock match) ===
 @app.route('/match', methods=['POST'])
 def match_song():
     if 'file' not in request.files:
@@ -21,12 +49,11 @@ def match_song():
     file.save(filepath)
 
     try:
-        # Load and analyze the audio file using librosa
         y, sr = librosa.load(filepath)
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
         avg_chroma = np.mean(chroma, axis=1)
 
-        # Simple simulated match logic based on chroma features
+        # Fake logic for now
         if avg_chroma[0] > 0.5:
             match = "Blinding Lights - The Weeknd"
             playlist = ["Save Your Tears", "Starboy", "Can't Feel My Face"]
@@ -42,5 +69,40 @@ def match_song():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# === Real Spotify Integration ===
+@app.route('/spotify-match', methods=['GET'])
+def spotify_match():
+    try:
+        token = get_spotify_token()
+        query = request.args.get('query', 'pop')  # default fallback
+
+        search_url = 'https://api.spotify.com/v1/search'
+        headers = {
+            'Authorization': f'Bearer {token}'
+        }
+
+        params = {
+            'q': query,
+            'type': 'track',
+            'limit': 5
+        }
+
+        response = requests.get(search_url, headers=headers, params=params)
+        data = response.json()
+
+        tracks = []
+        for item in data['tracks']['items']:
+            tracks.append({
+                'name': item['name'],
+                'artist': item['artists'][0]['name'],
+                'url': item['external_urls']['spotify']
+            })
+
+        return jsonify({'results': tracks})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# === Run Server ===
 if __name__ == '__main__':
     app.run(debug=True)
