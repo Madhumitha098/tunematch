@@ -14,24 +14,28 @@ function App() {
   const searchSong = async () => {
     const fileInput = document.querySelector('input[type="file"]');
     const file = fileInput.files[0];
-
+  
     if (!file) {
       alert('Please upload an audio file!');
       return;
     }
-
+  
     const formData = new FormData();
     formData.append('file', file);
-
+  
     setIsLoading(true);
+  
     try {
       const response = await fetch('https://tunematch-backend.onrender.com/match', {
         method: 'POST',
         body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
       });
-
+  
       const data = await response.json();
-
+  
       if (data.error) {
         alert("Server error: " + data.error);
       } else {
@@ -39,9 +43,12 @@ function App() {
       }
     } catch (error) {
       alert("Error reaching server: " + error.message);
+      console.error("Fetch failed:", error);
     }
+  
     setIsLoading(false);
   };
+  
 
   const fetchSpotifySongs = async () => {
     if (!searchInput.trim()) {
