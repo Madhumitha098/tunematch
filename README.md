@@ -44,6 +44,8 @@
 
 ---
 
+
+
 ## 🚀 Getting Started Locally
 
 ```bash
@@ -60,8 +62,7 @@ python app.py
 cd ../client
 npm install
 npm start
-
-
+```
 🧠 Future Improvements
 🎼 Match hummed audio to real songs using a fingerprint database
 
@@ -73,4 +74,4 @@ npm start
 
 🙋‍♀️ Built By
 Madhumitha Bascarane
-
+🌐 LinkedIn ・ 💻 GitHub
