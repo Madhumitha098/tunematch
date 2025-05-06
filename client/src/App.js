@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 function App() {
   const [audioURL, setAudioURL] = useState(null);
   const [result, setResult] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
 
   const handleAudioUpload = (e) => {
     const file = e.target.files[0];
@@ -22,7 +23,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/match', {
+      const response = await fetch('https://tunematch-backend.onrender.com/match', {
         method: 'POST',
         body: formData,
       });
@@ -41,15 +42,20 @@ function App() {
   };
 
   const fetchSpotifySongs = async () => {
+    if (!searchInput.trim()) {
+      alert('Please enter a search term!');
+      return;
+    }
+  
     try {
-      const response = await fetch('http://127.0.0.1:5000/spotify-match?query=pop');
+      const response = await fetch(`https://tunematch-backend.onrender.com/spotify-match?query=${encodeURIComponent(searchInput)}`);
       const data = await response.json();
-
+  
       if (data.error) {
         alert("Spotify error: " + data.error);
       } else {
         setResult({
-          matched_song: '🎧 Spotify Suggestions',
+          matched_song: `🎧 Spotify Results for "${searchInput}"`,
           playlist: data.results.map(track => `${track.name} - ${track.artist}`)
         });
       }
@@ -57,6 +63,7 @@ function App() {
       alert("Failed to fetch Spotify songs: " + error.message);
     }
   };
+  
 
   return (
     <div style={{
@@ -110,6 +117,22 @@ function App() {
           🎵 Search Song
         </button>
 
+        <br />
+
+        <input
+          type="text"
+          placeholder="Enter artist, mood, or song..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          style={{
+          marginBottom: '10px',
+          padding: '10px',
+          borderRadius: '20px',
+          border: '1px solid #ccc',
+          width: '90%',
+          fontSize: '1rem'
+          }}
+        />
         <br />
 
         <button
