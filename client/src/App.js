@@ -4,6 +4,7 @@ function App() {
   const [audioURL, setAudioURL] = useState(null);
   const [result, setResult] = useState(null);
   const [searchInput, setSearchInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAudioUpload = (e) => {
     const file = e.target.files[0];
@@ -22,6 +23,7 @@ function App() {
     const formData = new FormData();
     formData.append('file', file);
 
+    setIsLoading(true);
     try {
       const response = await fetch('https://tunematch-backend.onrender.com/match', {
         method: 'POST',
@@ -37,8 +39,8 @@ function App() {
       }
     } catch (error) {
       alert("Error reaching server: " + error.message);
-      console.error('Request failed:', error);
     }
+    setIsLoading(false);
   };
 
   const fetchSpotifySongs = async () => {
@@ -46,11 +48,12 @@ function App() {
       alert('Please enter a search term!');
       return;
     }
-  
+
+    setIsLoading(true);
     try {
       const response = await fetch(`https://tunematch-backend.onrender.com/spotify-match?query=${encodeURIComponent(searchInput)}`);
       const data = await response.json();
-  
+
       if (data.error) {
         alert("Spotify error: " + data.error);
       } else {
@@ -62,8 +65,26 @@ function App() {
     } catch (error) {
       alert("Failed to fetch Spotify songs: " + error.message);
     }
+    setIsLoading(false);
   };
-  
+
+  const spinnerStyle = {
+    display: 'inline-block',
+    width: '40px',
+    height: '40px',
+    border: '4px solid rgba(255, 255, 255, 0.3)',
+    borderTop: '4px solid #a051d1',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+    marginTop: '20px'
+  };
+
+  const spinnerAnimation = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  `;
 
   return (
     <div style={{
@@ -76,9 +97,11 @@ function App() {
       fontFamily: 'Poppins, sans-serif',
       padding: '20px'
     }}>
+      <style>{spinnerAnimation}</style>
+
       <h1 style={{ fontSize: '2.5rem', marginBottom: '10px', color: '#ffffff' }}>🎧 TuneMatch</h1>
       <p style={{ fontSize: '1.2rem', color: '#f0f0f0', marginBottom: '30px' }}>
-        Hum a tune or upload an audio file to find a matching song!
+        Hum a tune or upload an audio file to find matching songs!
       </p>
 
       <div style={{
@@ -125,12 +148,12 @@ function App() {
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           style={{
-          marginBottom: '10px',
-          padding: '10px',
-          borderRadius: '20px',
-          border: '1px solid #ccc',
-          width: '90%',
-          fontSize: '1rem'
+            marginBottom: '10px',
+            padding: '10px',
+            borderRadius: '20px',
+            border: '1px solid #ccc',
+            width: '90%',
+            fontSize: '1rem'
           }}
         />
         <br />
@@ -152,6 +175,13 @@ function App() {
         >
           🎶 Get Spotify Songs
         </button>
+
+        {isLoading && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={spinnerStyle}></div>
+            <p style={{ color: '#555', marginTop: '10px' }}>Loading, please wait...</p>
+          </div>
+        )}
       </div>
 
       {result && result.matched_song && (
