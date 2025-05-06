@@ -5,10 +5,11 @@ import librosa
 import numpy as np
 import requests
 import base64
+import os
 
 # === Spotify API credentials ===
-SPOTIFY_CLIENT_ID = 'your_client_id_here'
-SPOTIFY_CLIENT_SECRET = 'your_client_secret_here'
+SPOTIFY_CLIENT_ID = 'caeef8d028b74027910db1ff9e07697f'
+SPOTIFY_CLIENT_SECRET = '693343522b2c400e84bdb1e7e7f9e59d'
 
 # === Flask Setup ===
 app = Flask(__name__)
@@ -20,7 +21,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # === Get Spotify Access Token ===
 def get_spotify_token():
     auth_url = 'https://accounts.spotify.com/api/token'
-    auth_header = base64.b64encode(f"{'caeef8d028b74027910db1ff9e07697f'}:{'693343522b2c400e84bdb1e7e7f9e59d'}".encode()).decode()
+    auth_header = base64.b64encode(f"{SPOTIFY_CLIENT_ID}:{SPOTIFY_CLIENT_SECRET}".encode()).decode()
 
     headers = {
         'Authorization': f'Basic {auth_header}',
@@ -105,4 +106,5 @@ def spotify_match():
 
 # === Run Server ===
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
