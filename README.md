@@ -64,6 +64,7 @@ npm install
 npm start
 ```
 🧠 Future Improvements
+
 🎼 Match hummed audio to real songs using a fingerprint database
 
 🔁 AI-based matching using vector embeddings
@@ -72,6 +73,7 @@ npm start
 
 📱 Mobile responsiveness
 
+
 🙋‍♀️ Built By
+
 Madhumitha Bascarane
-🌐 LinkedIn ・ 💻 GitHub
