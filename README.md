@@ -1,111 +1,76 @@
-🎧 TuneMatch
+# 🎶 TuneMatch – Hum-to-Find Music Identifier
 
-Find your favorite songs by humming a tune!
+**TuneMatch** is a full-stack music identification web app that lets users **upload an audio clip** (like a song or a hum) and discover relevant tracks using the **Spotify API**. Built with **React**, **Flask**, and audio analysis tools like **Librosa**, it blends creativity, AI, and real-time music search.
 
-TuneMatch is an AI-powered music identifier and playlist generator built with React, Flask, and Librosa.
+---
 
+## 🌐 Live Demo
 
-🚀 Features
+👉 [Try TuneMatch Live](https://tunematch.vercel.app)
 
-🎤 Upload a .wav or .mp3 recording of your voice or music
+---
 
-🎶 Real-time audio analysis using librosa
+## ✨ Features
 
-🎯 Match your tune to a popular song (simulated matching)
+- 🎤 Upload a song or hum snippet to search
+- 🔍 Enter keywords like “tamil love” or “bollywood sad” to get Spotify recommendations
+- 🎧 Get real-time results from Spotify’s live music catalog
+- ⚡ Fast and interactive React-based UI
+- 🌍 Live deployed with Vercel (frontend) and Render (backend)
 
-📜 Get personalized playlist recommendations
+---
 
-🖥️ Full-stack project: React frontend + Flask backend
+## 🛠 Tech Stack
 
-☁️ Future: Deploy to Render/Vercel and integrate Spotify API
+| Frontend | Backend | Tools & APIs | Hosting |
+|----------|---------|--------------|---------|
+| React    | Flask   | Spotify Web API | Vercel (React) |
+| HTML/CSS | Python  | Librosa, Flask-CORS | Render (Flask) |
 
+---
 
-🛠 Tech Stack
+## 🧪 How It Works
 
+1. Upload an `.mp3` or `.wav` file (song or hum)
+2. The backend extracts audio features using `librosa`
+3. Or, enter a search query and get Spotify matches
+4. The frontend shows a curated playlist from Spotify
 
-Frontend	
+---
 
-React, JavaScript, HTML5, CSS3
+## 📸 Screenshots
 
+> *Coming soon — add a few images of the app UI, file upload area, and result list*
 
-Backend	
+---
 
-Flask (Python)
+## 🚀 Getting Started Locally
 
-
-Audio Analysis
-
-Librosa, NumPy
-
-
-Deployment
-
-(Coming soon) Render + Vercel
-
-
-📂 Project Structure
-
-tunematch/
-
-├── client/         # React frontend (upload UI)
-
-├── server/         # Flask backend (audio analysis API)
-
-├── uploads/        # Temporary uploaded audio files
-
-├── README.md       # Project overview
-
-
-
-⚙️ How to Run Locally
-
-Clone the repo
-
+```bash
+# Clone the repo
 git clone https://github.com/Madhumitha098/tunematch.git
-
 cd tunematch
 
-
-
-Backend Setup
-
+# Run backend
 cd server
-
-python3 -m venv venv
-
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-pip install flask flask-cors librosa numpy soundfile
-
+pip install -r requirements.txt
 python app.py
 
-
-Frontend Setup
-
+# Run frontend
 cd ../client
-
 npm install
-
 npm start
 
 
-Open
+🧠 Future Improvements
+🎼 Match hummed audio to real songs using a fingerprint database
 
-Frontend: http://localhost:3000
+🔁 AI-based matching using vector embeddings
 
-Backend: http://127.0.0.1:5000
+🎨 Improved UI with animations and theme options
 
+📱 Mobile responsiveness
 
-📜 Future Enhancements
+🙋‍♀️ Built By
+Madhumitha Bascarane
 
-Improve song matching with real ML models
-
-Integrate Spotify API for live playlist generation
-
-Add real-time microphone recording
-
-Deploy frontend (Vercel) and backend (Render)
-
-🙌 Author
-
-Madhumitha Bascarane 
