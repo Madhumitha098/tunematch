@@ -42,17 +42,27 @@ def get_spotify_token():
 # === File Upload + Basic Analysis (still mock match) ===
 @app.route('/match', methods=['POST'])
 def match_song():
+    print("POST /match recieved")
+   
     if 'file' not in request.files:
+        print("No file in request")
         return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
+    print(f"File recieved: {file.filename}"), 400
+
+    filename = secure_filename(file.filename)
     filepath = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(filepath)
+    print(f"File saved to {filepath}")
 
     try:
         y, sr = librosa.load(filepath)
+        print("Audio loaded with librosa")
+
         chroma = librosa.feature.chroma_stft(y=y, sr=sr)
         avg_chroma = np.mean(chroma, axis=1)
+        print("Chroma features extracted")
 
         # Fake logic for now
         if avg_chroma[0] > 0.5:
@@ -62,12 +72,15 @@ def match_song():
             match = "Levitating - Dua Lipa"
             playlist = ["Don't Start Now", "Break My Heart", "Physical"]
 
+        print(f"Match: {match}")
+
         return jsonify({
             'matched_song': match,
             'playlist': playlist
         })
 
     except Exception as e:
+        print("Error during processing", e)
         return jsonify({'error': str(e)}), 500
 
 # === Real Spotify Integration ===
